@@ -1,3 +1,4 @@
+// server.js is the entry point for the application.
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -26,8 +27,6 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined', { stream: { write: message => logger.info(message) } }));
 
-// Removed rate limiter setup
-
 // Connect to MongoDB
 mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => logger.info('Connected to MongoDB'))
@@ -41,8 +40,13 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // Centralized error handling
 app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).send('Something broke!');
+  // Check for duplicate key error
+  if (err && err.code === 11000) {
+    res.status(409).send({ error: 'Username already exists.' });
+  } else {
+    logger.error(err.stack);
+    res.status(500).send('Something broke!');
+  }
 });
 
 app.listen(PORT, () => {

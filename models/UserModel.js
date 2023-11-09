@@ -1,4 +1,3 @@
-// models/UserModel.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -7,10 +6,10 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, 'Username is required'],
-        unique: true,
+        unique: true, // Ensure uniqueness
         trim: true,
         lowercase: true,
-        match: [/^[a-zA-Z0-9]+$/, 'is invalid']
+        match: [/^[a-zA-Z0-9]+$/, 'is invalid'] // Only alphanumeric characters
     },
     password: {
         type: String,
@@ -21,16 +20,23 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function(next) {
     const user = this;
     if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
+        user.password = await bcrypt.hash(user.password, 10);
     }
     next();
 });
 
 userSchema.methods.comparePassword = async function(candidatePassword) {
-    const isMatch = await bcrypt.compare(candidatePassword, this.password);
-    return isMatch;
+    return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+userSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+        next(new Error('Username already exists'));
+    } else {
+        next(error);
+    }
+});
+
+const User = mongoose.model('User', userSchema, 'usersCollection');
 
 module.exports = User;
