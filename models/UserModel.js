@@ -14,8 +14,29 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required']
-    }
-}, { timestamps: true });
+    },
+    email: { 
+        type: String, 
+        unique: true ,
+        sparse: true
+    },     
+    role: { 
+        type: String, 
+        enum: ["consumer", "driver", "admin"] 
+    },
+    fullName: { 
+        type: String 
+    },                               
+   phone: { 
+    type: Number 
+    },                                  
+   address: { 
+    type: String 
+    },                                
+   registeredAt: { 
+    type: Date, 
+    default: Date.now },          
+});
 
 userSchema.pre('save', async function(next) {
     const user = this;
@@ -29,13 +50,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.post('save', function(error, doc, next) {
-    if (error.name === 'MongoError' && error.code === 11000) {
-        next(new Error('Username already exists'));
-    } else {
-        next(error);
-    }
-});
 
 const User = mongoose.model('User', userSchema, 'usersCollection');
 
