@@ -46,6 +46,6 @@ jobs:
               export PORT=${{ secrets.PORT }}
               cd /home/deployer/code/backend
               git pull
-              npm ci
-              npm install 
-              pm2 restart all
+              /home/deployer/.nvm/versions/node/v18.18.2/bin/npm ci
+              /home/deployer/.nvm/versions/node/v18.18.2/bin/npm install 
+              /home/deployer/.nvm/versions/node/v18.18.2/bin/pm2 restart all
