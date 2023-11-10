@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"echo \"No tests specified\" && exit 0",
+    "test": "echo \"No tests specified\" && exit 0",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
@@ -28,5 +28,8 @@
     "nodemon": "^3.0.1",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
