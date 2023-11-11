@@ -28,7 +28,7 @@ app.use(helmet());
 app.use(morgan('combined', { stream: { write: message => logger.info(message) } }));
 
 // Connect to MongoDB
-mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => logger.info('Connected to MongoDB'))
   .catch(err => logger.error(err));
 
@@ -49,6 +49,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT, () => {
   logger.info(`Server is running on port ${PORT}`);
 });
