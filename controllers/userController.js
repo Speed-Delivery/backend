@@ -1,7 +1,9 @@
+const { compareSync } = require('bcrypt');
 const User = require('../models/UserModel');
 
 const createUser = async (req, res) => {
     try {
+        console.log(req.body);
         const { username, password, email, role, fullName, phone, address } = req.body;
 
         // Check for existing username
@@ -24,6 +26,7 @@ const createUser = async (req, res) => {
 
         res.status(201).json({ message: "User created successfully" });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
 };
