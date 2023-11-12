@@ -1,5 +1,6 @@
 const { compareSync } = require('bcrypt');
 const User = require('../models/UserModel');
+import generateToken from '../config/generateToken';
 
 const createUser = async (req, res) => {
     try {
@@ -31,4 +32,27 @@ const createUser = async (req, res) => {
     }
 };
 
-module.exports = { createUser };
+const signInUser = async (req, res) => {
+    const { username, password } = req.body;
+  
+    const user = await User.findOne({ username });
+  
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+  
+    const passwordMatch = await user.comparePassword(password);
+  
+    if (passwordMatch) {
+      res
+        .status(200)
+        .json({
+          message: "Login successful",
+          token: generateToken(user.username),
+        });
+    } else {
+      res.status(401).json({ error: "Invalid password" });
+    }
+  };
+
+module.exports = { createUser, signInUser };
