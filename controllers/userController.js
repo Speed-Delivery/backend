@@ -34,7 +34,7 @@ const createUser = async (req, res) => {
 
 const signInUser = async (req, res) => {
     const { username, password, role } = req.body;
-
+    console.log(req.body);
     //Check username exist or not
     const user = await User.findOne({ username });
   
@@ -48,7 +48,7 @@ const signInUser = async (req, res) => {
     }
     //Matching Password
     const passwordMatch = await user.comparePassword(password);
-  
+    console.log(passwordMatch);
     if (passwordMatch) {
       res
         .status(200)
