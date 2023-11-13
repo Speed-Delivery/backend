@@ -33,15 +33,19 @@ const createUser = async (req, res) => {
 };
 
 const signInUser = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     //Check username exist or not
     const user = await User.findOne({ username });
   
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Access denied for this role" });
     }
-  
+    
+      // Check if the role matches
+    if (user.role !== role) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     //Matching Password
     const passwordMatch = await user.comparePassword(password);
   
