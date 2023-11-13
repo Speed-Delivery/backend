@@ -1,6 +1,6 @@
 const { compareSync } = require('bcrypt');
 const User = require('../models/UserModel');
-import generateToken from '../config/generateToken';
+const generateToken = require('../config/generateToken');
 
 const createUser = async (req, res) => {
     try {
@@ -50,7 +50,7 @@ const signInUser = async (req, res) => {
         .status(200)
         .json({
           message: "Login successful",
-          token: generateToken(user.username),   // generate jwt access token
+          token: generateToken(user._id),   // generate jwt access token
         });
     } else {
       res.status(401).json({ error: "Invalid password" });
