@@ -21,7 +21,7 @@ router.post(
 );
 
 router.put(
-  "/:lockerId",
+  "/:lid",
   [
     check("cabinetNumber").not().isEmpty(),
     check("status").isIn(["occupied", "available"]),
