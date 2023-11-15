@@ -46,15 +46,81 @@ const signInUser = async (req, res) => {
     const passwordMatch = await user.comparePassword(password);
   
     if (passwordMatch) {
-      res
-        .status(200)
-        .json({
-          message: "Login successful",
-          token: generateToken(user._id),   // generate jwt access token
-        });
+      res.status(200).json({
+        message: "Login successful",
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          fullName: user.fullName,
+          phone: user.phone,
+          address: user.address,
+          token: generateToken(user._id), // generate jwt access token
+        },
+      });
     } else {
       res.status(401).json({ error: "Invalid password" });
     }
   };
 
-module.exports = { createUser, signInUser };
+  //get user profile
+  const getUserProfile = async (req, res) => {
+    const { userId } = req.body;
+    try {   //select every field without password
+      const user = await User.findById(userId).select("-password");
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ error: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
+  //update user profile
+
+  const updateUserProfile = async (req, res) => {
+
+    //recieve user object from the request body
+
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+
+      //updating user data if it's in the request body, otherwise, keep the old data
+
+      user.username = req.body.username || user.username;
+      user.email = req.body.email || user.email;
+      user.role = req.body.role || user.role;
+      user.fullName = req.body.fullName || user.fullName;
+      user.phone = req.body.phone || user.phone;
+      user.address = req.body.address || user.address;
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      //saving updated user data into the database
+
+      const updatedUser = await user.save();
+
+      //sending new user data back to the client
+
+      res
+        .json({
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          fullName: updatedUser.fullName,
+          phone: updatedUser.phone,
+          address: updatedUser.address,
+          token: generateToken(updatedUser._id),
+        })
+        .status(200);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  };
+module.exports = { createUser, signInUser, getUserProfile, updateUserProfile };
