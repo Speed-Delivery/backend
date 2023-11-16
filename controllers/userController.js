@@ -62,7 +62,7 @@ const signInUser = async (req, res) => {
           address: user.address,
           token: generateToken(user._id), // generate jwt access token
         },
-      });
+      })
     } else {
       res.status(401).json({ error: "Invalid password" });
     }
