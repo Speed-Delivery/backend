@@ -15,13 +15,18 @@ router.post(
     check("lockerNumber").not().isEmpty(),
     check("lockerLocation").not().isEmpty(),
     check("lockerStatus").not().isEmpty(),
+    check("lockerCode").not().isEmpty(),
   ],
   lockersController.initializeLockers
 );
 
 router.put(
-  "/:lockerId",
-  [check("lockerStatus").isIn(["available", "occupied"])],
+  "/:lid",
+  [
+    check("cabinetNumber").not().isEmpty(),
+    check("status").isIn(["occupied", "available"]),
+    check("currentParcel").not().isEmpty(),
+  ],
   lockersController.updateLockerById
 );
 
