@@ -86,15 +86,13 @@ const signInUser = async (req, res) => {
   //update user profile
 
   const updateUserProfile = async (req, res) => {
-
     //recieve user object from the request body
 
-    const user = await User.findById(req.user._id);
-
+    const user = await User.findById(req.body.userId);
+  
     if (user) {
-
       //updating user data if it's in the request body, otherwise, keep the old data
-
+  
       user.username = req.body.username || user.username;
       user.email = req.body.email || user.email;
       user.role = req.body.role || user.role;
@@ -104,13 +102,13 @@ const signInUser = async (req, res) => {
       if (req.body.password) {
         user.password = req.body.password;
       }
-
+  
       //saving updated user data into the database
-
+  
       const updatedUser = await user.save();
-
+  
       //sending new user data back to the client
-
+  
       res
         .json({
           _id: updatedUser._id,
@@ -120,7 +118,6 @@ const signInUser = async (req, res) => {
           fullName: updatedUser.fullName,
           phone: updatedUser.phone,
           address: updatedUser.address,
-          token: generateToken(updatedUser._id),
         })
         .status(200);
     } else {
