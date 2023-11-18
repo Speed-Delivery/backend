@@ -1,4 +1,3 @@
-// server.js is the entry point for the application.
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -40,7 +39,7 @@ mongoose
   .catch((err) => logger.error(err));
 
 // Use the user routes
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes); // Changed base path to /api/users
 app.use("/api/lockers", lockersRoutes);
 
 // Health check endpoint
