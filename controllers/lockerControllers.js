@@ -26,7 +26,6 @@ const initializeLockers = async () => {
 
       await newLocker.save();
     } else {
-      // Update existing locker if it has less than 15 cabinets
       if (existingLocker.cabinets.length < cabinetCount) {
         for (
           let i = existingLocker.cabinets.length + 1;

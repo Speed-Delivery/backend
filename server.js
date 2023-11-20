@@ -47,9 +47,8 @@ app.use("/api/parcels", parcelRoutes);
 // Health check endpoint
 app.get("/health", (req, res) => res.status(200).send("OK"));
 
-// Centralized error handling
+// Centralized error handling and duplicate key error
 app.use((err, req, res, next) => {
-  // Check for duplicate key error
   if (err && err.code === 11000) {
     res.status(409).send({ error: "Username already exists." });
   } else {

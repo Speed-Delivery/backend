@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
+// Parcel Schema
+
 const parcelSchema = new mongoose.Schema({
   parcelDescription: { type: String, required: true },
   parcelWeight: { type: Number, required: true },
