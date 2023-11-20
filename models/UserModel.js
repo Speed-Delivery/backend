@@ -35,11 +35,7 @@ const userSchema = new mongoose.Schema({
     },                                
    registeredAt: { 
     type: Date, 
-    default: Date.now },   
-    parcels: {
-        sentParcels: [{}] ,
-        receivedParcels: [{}]
-    }       
+    default: Date.now },          
 });
 
 userSchema.pre('save', async function(next) {
