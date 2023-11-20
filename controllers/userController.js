@@ -18,9 +18,23 @@ exports.createUser = async (req, res) => {
             }
         }
 
+        
         const user = new User({ username, password, email, role, fullName, phone, address });
         await user.save();
-        res.status(201).json({ message: "User created successfully" });
+
+        // Set isAdmin based on the user's role
+        const isAdmin = user.role === 'admin';
+
+        res.status(201).json({ message: "User created successfully", isAdmin, user: {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            fullName: user.fullName,
+            phone: user.phone,
+            address: user.address,
+            token: generateToken(user._id, user.role),
+        } });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
