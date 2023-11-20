@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get("/", lockersController.getLockers);
 
+router.get("/", lockersController.getLockers);
+
 router.get("/:city", lockersController.getLockersByCity);
 
 router.post(
@@ -15,18 +17,13 @@ router.post(
     check("lockerNumber").not().isEmpty(),
     check("lockerLocation").not().isEmpty(),
     check("lockerStatus").not().isEmpty(),
-    check("lockerCode").not().isEmpty(),
   ],
   lockersController.initializeLockers
 );
 
 router.put(
   "/:lid",
-  [
-    check("cabinetNumber").not().isEmpty(),
-    check("status").isIn(["occupied", "available"]),
-    check("currentParcel").not().isEmpty(),
-  ],
+  [check("lockerStatus").isIn(["available", "occupied"])],
   lockersController.updateLockerById
 );
 
