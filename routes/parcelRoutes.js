@@ -16,11 +16,11 @@ router.post(
   [
     check("parcelDescription").not().isEmpty(), // Corrected from parcelDiscription
     check("parcelWeight").not().isEmpty(),
-    check("parcelDimension.length").not().isEmpty(), // Corrected from parcelDimenion
-    check("parcelDimension.width").not().isEmpty(), // Corrected from parcelDimenion
-    check("parcelDimension.height").not().isEmpty(), // Corrected from parcelDimenion
+    check("parcelDimension.length").not().isEmpty(),
+    check("parcelDimension.width").not().isEmpty(),
+    check("parcelDimension.height").not().isEmpty(),
     check("status").isIn(["awaiting pickup", "in transit", "delivered"]),
-    check("senderUsername").not().isEmpty(), // Changed from sender
+    check("senderUsername").not().isEmpty(),
     check("receiverUsername").not().isEmpty(),
   ],
   parcelsController.createParcel

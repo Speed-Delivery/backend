@@ -5,6 +5,8 @@ const lockersController = require("../controllers/lockerControllers");
 
 const router = express.Router();
 
+// this is for the locker
+
 router.get("/", lockersController.getLockers);
 
 router.get("/", lockersController.getLockers);

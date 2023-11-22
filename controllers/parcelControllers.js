@@ -6,6 +6,8 @@ const Parcel = require("../models/ParcelModel");
 const User = require("../models/UserModel");
 const Locker = require("../models/LockerModel");
 
+// this is for the parcel
+
 const getParcels = async (req, res, next) => {
   let parcels;
   try {
