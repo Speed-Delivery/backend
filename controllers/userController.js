@@ -4,36 +4,28 @@ const generateToken = require('../config/generateToken');
 
 exports.createUser = async (req, res) => {
     try {
-        const { username, password, email, role, fullName, phone, address } = req.body;
+        const { username, password, email } = req.body;
 
         const existingUserByUsername = await User.findOne({ username });
         if (existingUserByUsername) {
             return res.status(409).json({ error: "Username already exists" });
-        }
-
+        }    
         if (email) {
             const existingUserByEmail = await User.findOne({ email });
             if (existingUserByEmail) {
                 return res.status(409).json({ error: "Email already exists" });
             }
         }
-
         
-        const user = new User({ username, password, email, role, fullName, phone, address });
+        const user = new User({ username, password, email });
         await user.save();
 
-        // Set isAdmin based on the user's role
-        const isAdmin = user.role === 'admin';
-
-        res.status(201).json({ message: "User created successfully", isAdmin, user: {
+        
+        res.status(201).json({ message: "User created successfully", user: {
             _id: user._id,
             username: user.username,
             email: user.email,
-            role: user.role,
-            fullName: user.fullName,
-            phone: user.phone,
-            address: user.address,
-            token: generateToken(user._id, user.role),
+            token: generateToken(user._id),
         } });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -53,11 +45,7 @@ exports.signInUser = async (req, res) => {
             _id: user._id,
             username: user.username,
             email: user.email,
-            role: user.role,
-            fullName: user.fullName,
-            phone: user.phone,
-            address: user.address,
-            token: generateToken(user._id, user.role),
+            token: generateToken(user._id),
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -83,13 +71,8 @@ exports.updateUser= async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
-        user.role = req.body.role || user.role;
-        user.fullName = req.body.fullName || user.fullName;
-        user.phone = req.body.phone || user.phone;
-        user.address = req.body.address || user.address;
 
         if (req.body.password) {
             user.password = await bcrypt.hash(req.body.password, 10);
@@ -100,11 +83,7 @@ exports.updateUser= async (req, res) => {
             _id: updatedUser._id,
             username: updatedUser.username,
             email: updatedUser.email,
-            role: updatedUser.role,
-            fullName: updatedUser.fullName,
-            phone: updatedUser.phone,
-            address: updatedUser.address,
-            token: generateToken(updatedUser._id, updatedUser.role),
+            token: generateToken(updatedUser._id),
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -113,16 +92,21 @@ exports.updateUser= async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-        res.status(200).json({ message: "User deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        const userId = req.params.userId;
+        console.log("The user ID to be deleted is: ", userId);
+        // Delete the user
+        await User.findByIdAndDelete(userId);
+  
+        // Do not delete associated parcel data, but update it if needed
+        // For example, mark parcels as 'deleted' or 'unassigned'
+        // Example: Update parcel status to 'deleted' for parcels associated with the deleted user
+        // await Parcel.updateMany({ userId }, { status: 'deleted' });
+        res.status(200).json({ message: 'User account deleted successfully' });
+        } catch (error) {
+        res.status(500).json({ error: 'Failed to delete user account' });
     }
-};
-
+  };
+  
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find().select("-password");

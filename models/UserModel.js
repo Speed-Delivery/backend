@@ -11,28 +11,21 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^[a-zA-Z0-9]+$/, 'is invalid'] // Only alphanumeric characters
     },
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true,
+        trim: true,
+        lowercase: true,
+        match: [
+          /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+          'Invalid email format'
+        ]
+      },      
     password: {
         type: String,
         required: [true, 'Password is required']
-    },
-    email: { 
-        type: String, 
-        unique: true ,
-        sparse: true
-    },     
-    role: { 
-        type: String, 
-        enum: ["user", "driver", "admin"] 
-    },
-    fullName: { 
-        type: String 
-    },                               
-   phone: { 
-    type: Number 
-    },                                  
-   address: { 
-    type: String 
-    },                                
+    },               
    registeredAt: { 
     type: Date, 
     default: Date.now },          
@@ -51,6 +44,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 
-const User = mongoose.model('User', userSchema, 'usersCollection');
+const User = mongoose.model('User', userSchema, 'newusers');
 
 module.exports = User;
