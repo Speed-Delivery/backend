@@ -13,8 +13,10 @@ const getParcels = async (req, res, next) => {
   try {
     parcels = await Parcel.find({});
   } catch (err) {
-    const error = new Error("Fetching parcels failed, please try again later.");
-    error.code = 500;
+    const error = new HttpError(
+      "Fetching parcels failed, please try again later.",
+      500
+    );
     return next(error);
   }
   res.json({
@@ -30,25 +32,23 @@ const getParcelsByUserId = async (req, res, next) => {
   try {
     userWithParcels = await User.findById(userId).populate("sentParcels");
   } catch (err) {
-    const error = new Error(
-      "Fetching user data failed, please try again later."
+    const error = new HttpError(
+      "Fetching user data failed, please try again later.",
+      500
     );
-    error.code = 500;
     return next(error);
   }
 
   // Check if user exists
   if (!userWithParcels) {
-    const error = new Error("Could not find user for the provided id.");
-    error.code = 404;
-    return next(error);
+    return next(
+      new HttpError("Could not find a user with the provided user id.", 404)
+    );
   }
 
   // Check if user has sent parcels
   if (userWithParcels.sentParcels.length === 0) {
-    const error = new Error("User has not sent any parcels.");
-    error.code = 404;
-    return next(error);
+    return next(new HttpError("User has not sent any parcels.", 404));
   }
 
   res.json({
@@ -65,14 +65,18 @@ const getParcelById = async (req, res, next) => {
   try {
     parcel = await Parcel.findById(parcelId);
   } catch (err) {
-    const error = new Error("Something went wrong, could not find a parcel.");
-    error.code = 500;
+    const error = new HttpError(
+      "Something went wrong, could not find a parcel.",
+      500
+    );
     return next(error);
   }
 
   if (!parcel) {
-    const error = new Error("Could not find a parcel for the provided id.");
-    error.code = 404;
+    const error = new HttpError(
+      "Could not find a parcel for the provided id.",
+      404
+    );
     return next(error);
   }
 
@@ -83,9 +87,9 @@ const createParcel = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
-    const error = new Error("Invalid inputs passed, please check your data.");
-    error.code = 422;
-    return next(error);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
   }
 
   const {
@@ -93,57 +97,57 @@ const createParcel = async (req, res, next) => {
     parcelWeight,
     parcelDimension,
     status,
-    senderUsername,
-    receiverUsername,
+    sender,
+    recipient,
   } = req.body;
 
-  const createdParcel = new Parcel({
-    parcelDescription,
-    parcelWeight,
-    parcelDimension,
-    status: "awaiting pickup",
-    senderUsername,
-    receiverUsername,
-  });
-
-  console.log(createdParcel);
-
-  let senderUser;
-  let receiverUser;
-  let sess; // Declare sess at the top of the function
+  let senderUser, receiverUser, sess;
+  let createdParcel;
 
   try {
-    senderUser = await User.findOne({ username: senderUsername });
-    receiverUser = await User.findOne({ username: receiverUsername });
+    // Find the users by their full name
+    senderUser = sender.name
+      ? await User.findOne({ fullName: sender.name })
+      : null;
+    receiverUser = recipient.name
+      ? await User.findOne({ fullName: recipient.name })
+      : null;
 
-    if (!senderUser || !receiverUser) {
-      const error = new Error("Could not find user for the provided username.");
-      error.code = 404;
-      throw error;
-    }
+    createdParcel = new Parcel({
+      parcelDescription,
+      parcelWeight,
+      parcelDimension,
+      status,
+      sender: {
+        name: sender.name,
+        address: sender.address,
+        phone: sender.phone,
+        email: sender.email,
+        user: senderUser ? senderUser._id : null,
+      },
+      recipient: {
+        name: recipient.name,
+        address: recipient.address,
+        phone: recipient.phone,
+        email: recipient.email,
+        user: receiverUser ? receiverUser._id : null,
+      },
+    });
 
     sess = await mongoose.startSession();
     sess.startTransaction();
 
     await createdParcel.save({ session: sess });
 
-    // Update the sender's sentParcels
-    senderUser.parcels = senderUser.parcels || {
-      sentParcels: [],
-      receivedParcels: [],
-    };
-    senderUser.parcels.sentParcels.push(createdParcel);
+    if (senderUser) {
+      senderUser.sentParcels.push(createdParcel);
+      await senderUser.save({ session: sess });
+    }
 
-    await senderUser.save({ session: sess });
-
-    // Update the receiver's receivedParcels
-    receiverUser.parcels = receiverUser.parcels || {
-      sentParcels: [],
-      receivedParcels: [],
-    };
-    receiverUser.parcels.receivedParcels.push(createdParcel);
-
-    await receiverUser.save({ session: sess });
+    if (receiverUser) {
+      receiverUser.receivedParcels.push(createdParcel);
+      await receiverUser.save({ session: sess });
+    }
 
     await sess.commitTransaction();
   } catch (err) {
@@ -151,8 +155,10 @@ const createParcel = async (req, res, next) => {
     if (sess) {
       await sess.abortTransaction();
     }
-    const error = new Error("Creating parcel failed, please try again.");
-    error.code = 500;
+    const error = new HttpError(
+      "Creating parcel failed, please try again.",
+      500
+    );
     return next(error);
   } finally {
     if (sess) {
@@ -164,34 +170,31 @@ const createParcel = async (req, res, next) => {
 };
 
 const updateParcelById = async (req, res, next) => {
-  //only update parcel status
   const parcelId = req.params.parcelId;
   const { status } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(parcelId)) {
+    return next(new HttpError("Invalid parcel ID", 400));
+  }
+
+  if (!["awaiting pickup", "in transit", "delivered"].includes(status)) {
+    return next(new HttpError("Invalid status value", 400));
+  }
 
   let parcel;
   try {
     parcel = await Parcel.findById(parcelId);
-  } catch (err) {
-    const error = new Error(
-      "Something went wrong, could not update parcel status."
-    );
-    error.code = 500;
-    return next(error);
-  }
+    if (!parcel) {
+      throw new HttpError("Could not find a parcel for the provided id.", 404);
+    }
 
-  if (!parcel) {
-    const error = new Error("Could not find parcel for the provided id.");
-    error.code = 404;
-    return next(error);
-  }
-
-  parcel.status = status;
-
-  try {
+    parcel.status = status;
     await parcel.save();
   } catch (err) {
-    const error = new Error("Something went wrong, could not update parcel.");
-    error.code = 500;
+    const error =
+      err instanceof HttpError
+        ? err
+        : new HttpError("Something went wrong, could not update parcel.", 500);
     return next(error);
   }
 
