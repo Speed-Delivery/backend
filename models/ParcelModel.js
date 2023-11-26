@@ -11,13 +11,28 @@ const parcelSchema = new mongoose.Schema({
     width: { type: Number, required: true },
     height: { type: Number, required: true },
   },
-  status: {
-    type: String,
-    required: true,
-    enum: ["awaiting pickup", "in transit", "delivered"],
+  sender: {
+    name: { type: String, required: true },
+    address: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
   },
-  senderUsername: { type: String, required: true, ref: "User" },
-  receiverUsername: { type: String, required: true, ref: "User" },
+  recipient: {
+    name: { type: String, required: true },
+    address: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
