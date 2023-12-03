@@ -5,10 +5,6 @@ const parcelsController = require("../controllers/parcelControllers");
 
 const router = express.Router();
 
-router.get("/", parcelsController.getParcels);
-
-router.get("/:parcelId", parcelsController.getParcelById);
-
 router.get("/user/:userId", parcelsController.getParcelsByUserId);
 
 router.post(
@@ -38,6 +34,9 @@ router.put(
   parcelsController.updateParcelById
 );
 
+
+router.get("/:parcelId", parcelsController.getParcelById);
+router.get("/", parcelsController.getParcels);
 // router.delete("/:pid", parcelsController.deleteParcel);
 
 module.exports = router;

@@ -25,6 +25,7 @@ const getParcels = async (req, res, next) => {
 };
 
 const getParcelsByUserId = async (req, res, next) => {
+  console.log("getParcelsByUserId", req.params);
   const userId = req.params.userId;
   console.log(userId);
 
@@ -105,14 +106,15 @@ const createParcel = async (req, res, next) => {
   let createdParcel;
 
   try {
-    // Find the users by their email
+    // Find the users by their full name
     senderUser = sender.email
       ? await User.findOne({ email: sender.email })
       : null;
     receiverUser = recipient.email
       ? await User.findOne({ email: recipient.email })
       : null;
-
+    console.log("senderUser", senderUser);
+    console.log("receiverUser", receiverUser);
     createdParcel = new Parcel({
       parcelDescription,
       parcelWeight,
