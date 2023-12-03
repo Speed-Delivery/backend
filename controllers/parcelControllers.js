@@ -105,12 +105,12 @@ const createParcel = async (req, res, next) => {
   let createdParcel;
 
   try {
-    // Find the users by their full name
-    senderUser = sender.name
-      ? await User.findOne({ fullName: sender.name })
+    // Find the users by their email
+    senderUser = sender.email
+      ? await User.findOne({ email: sender.email })
       : null;
-    receiverUser = recipient.name
-      ? await User.findOne({ fullName: recipient.name })
+    receiverUser = recipient.email
+      ? await User.findOne({ email: recipient.email })
       : null;
 
     createdParcel = new Parcel({
@@ -119,6 +119,7 @@ const createParcel = async (req, res, next) => {
       parcelDimension,
       status,
       sender: {
+        // Assuming sender details are essential, keep them but use the user's ID
         name: sender.name,
         address: sender.address,
         phone: sender.phone,
@@ -126,6 +127,7 @@ const createParcel = async (req, res, next) => {
         user: senderUser ? senderUser._id : null,
       },
       recipient: {
+        // Same for recipient details
         name: recipient.name,
         address: recipient.address,
         phone: recipient.phone,
@@ -139,12 +141,12 @@ const createParcel = async (req, res, next) => {
 
     await createdParcel.save({ session: sess });
 
-    if (senderUser) {
+    if (senderUser && senderUser.sentParcels) {
       senderUser.sentParcels.push(createdParcel);
       await senderUser.save({ session: sess });
     }
 
-    if (receiverUser) {
+    if (receiverUser && receiverUser.receivedParcels) {
       receiverUser.receivedParcels.push(createdParcel);
       await receiverUser.save({ session: sess });
     }
