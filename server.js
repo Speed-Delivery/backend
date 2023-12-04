@@ -7,6 +7,7 @@ const winston = require("winston");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const userRoutes = require("./routes/userRoutes");
+const driverRoutes = require("./routes/driverRoutes");
 const lockersRoutes = require("./routes/LockerRoutes");
 const parcelRoutes = require("./routes/parcelRoutes");
 const { PORT } = require("./config/serverConfig");
@@ -54,6 +55,7 @@ mongoose
 
 // Use the user routes
 app.use("/api/users", userRoutes); // Changed base path to /api/users
+app.use("/api/drivers", driverRoutes);
 app.use("/api/lockers", lockersRoutes);
 app.use("/api/parcels", parcelRoutes);
 
