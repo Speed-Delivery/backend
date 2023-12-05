@@ -11,6 +11,7 @@ const userRoutes = require("./routes/userRoutes");
 const driverRoutes = require("./routes/driverRoutes");
 const lockersRoutes = require("./routes/LockerRoutes");
 const parcelRoutes = require("./routes/parcelRoutes");
+const transactionRoutes = require("./routes/transactionRoutes");
 const { PORT } = require("./config/serverConfig");
 const { dbUri } = require("./config/dbConfig");
 const Parcel = require("./models/ParcelModel");
@@ -97,6 +98,7 @@ app.use("/api/users", userRoutes); // Changed base path to /api/users
 app.use("/api/drivers", driverRoutes);
 app.use("/api/lockers", lockersRoutes);
 app.use("/api/parcels", parcelRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => res.status(200).send("OK"));
