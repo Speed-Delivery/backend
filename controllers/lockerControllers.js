@@ -125,6 +125,7 @@ const updateLockerById = async (req, res, next) => {
   locker.cabinets[cabinetIndex].status = status;
   locker.cabinets[cabinetIndex].currentParcel = currentParcel;
   locker.cabinets[cabinetIndex].code = generateCode();
+  locker.cabinets[cabinetIndex].cabinetStatusLastUpdated = Date.now();
 
   try {
     await locker.save();
