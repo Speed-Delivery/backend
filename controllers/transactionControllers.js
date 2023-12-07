@@ -42,7 +42,7 @@ const getTransactionById = async (req, res) => {
 };
 
 const createTransaction = async (req, res) => {
-  const { parcelId } = req.body; // Only parcelId is needed
+  const { parcelId, parcelStatus, CabinetId } = req.body; // Only parcelId is needed
   let existingParcel;
   let sess;
 
@@ -62,8 +62,8 @@ const createTransaction = async (req, res) => {
 
     const createdTransaction = new Transaction({
       parcelId,
-      parcelStatus: "attempted delivery",
-      lockerId: "5f9d3b9b0f0e7c2b3c7e2b3c",
+      parcelStatus,
+      CabinetId,
     });
 
     const result = await createdTransaction.save({ session: sess });
@@ -85,7 +85,8 @@ const createTransaction = async (req, res) => {
 
 const updateTransaction = async (req, res) => {
   const transactionId = req.params.transactionId;
-  const { lockerId, parcelStatus } = req.body; // Assuming these are the fields you want to update
+  const { parcelStatus } = req.body; // Only updating the parcelStatus
+
   let sess;
 
   try {
@@ -101,8 +102,7 @@ const updateTransaction = async (req, res) => {
       return;
     }
 
-    // Update the fields of the transaction
-    existingTransaction.lockerId = lockerId;
+    // Update only the parcelStatus of the transaction
     existingTransaction.parcelStatus = parcelStatus;
 
     const result = await existingTransaction.save({ session: sess });

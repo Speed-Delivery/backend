@@ -17,13 +17,13 @@ const transactionSchema = new mongoose.Schema({
     required: false,
     enum: [
       "picked up",
-      "attempted delivery",
+      "waiting to be placed",
       "awaiting pickup",
       "in transit",
       "delivered",
     ],
   },
-  lockerId: {
+  CabinetId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Locker",
     required: false, // Only required for parcels at the pickup point

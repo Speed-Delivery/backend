@@ -11,7 +11,7 @@ const lockerSchema = new mongoose.Schema({
     {
       cabinetNumber: { type: String, required: true },
       status: { type: String, required: true, enum: ["occupied", "available"] },
-      currentParcel: { type: mongoose.Types.ObjectId, ref: "Parcel" },
+      // currentParcel: { type: mongoose.Types.ObjectId, ref: "Parcel" },
       code: { type: String, required: true, unique: true },
       cabinetStatusLastUpdated: { type: Date, default: Date.now },
     },
