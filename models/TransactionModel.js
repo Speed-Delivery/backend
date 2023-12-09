@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator");
+const uniqueValidator = require("mongoose-unique-validator"); // Import the uniqueValidator package
 
 const transactionSchema = new mongoose.Schema({
   parcelId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Parcel", // Reference to the Parcel model
+    ref: "Parcel", // Assuming you have a Parcel model
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: false, // Make userId optional
-    ref: "User", // Reference to the User model
+    ref: "User", // Assuming you have a User model
   },
   parcelStatus: {
     type: String,
@@ -25,8 +25,8 @@ const transactionSchema = new mongoose.Schema({
   },
   CabinetId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Locker",
-    required: false, // Only required for parcels at the pickup point
+    ref: "Cabinet", // Reference to a specific Cabinet
+    required: false,
   },
   createdAt: {
     type: Date,
@@ -36,5 +36,4 @@ const transactionSchema = new mongoose.Schema({
 });
 
 transactionSchema.plugin(uniqueValidator);
-
 module.exports = mongoose.model("Transaction", transactionSchema);
