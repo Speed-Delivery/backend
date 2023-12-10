@@ -17,6 +17,7 @@ const { dbUri } = require("./config/dbConfig");
 const Parcel = require("./models/ParcelModel");
 const Locker = require("./models/LockerModel");
 const User = require("./models/UserModel");
+const Transaction = require("./models/TransactionModel");
 const app = express();
 app.use(cors());
 
@@ -46,43 +47,54 @@ app.use(
   morgan("combined", { stream: { write: (message) => logger.info(message) } })
 );
 
-cron.schedule("*/30 * * * * *", async () => {
-  try {
-    console.log("Running the cron job");
+// cron.schedule("*/30 * * * * *", async () => {
+//   try {
+//     console.log("Running the cron job");
 
-    const thirtySecondsAgo = new Date(new Date().getTime() - 30000);
-    console.log("Checking for updates since:", thirtySecondsAgo.toISOString());
+//     const thirtySecondsAgo = new Date(new Date().getTime() - 30000);
+//     console.log("Checking for updates since:", thirtySecondsAgo.toISOString());
 
-    // Fetch all lockers
-    const lockers = await Locker.find();
+//     // Fetch all lockers
+//     const lockers = await Locker.find();
 
-    let updatedCabinetsCount = 0;
+//     let updatedCabinetsCount = 0;
 
-    // Process each locker and its cabinets
-    lockers.forEach((locker) => {
-      locker.cabinets.forEach((cabinet) => {
-        const lastUpdated = new Date(cabinet.cabinetStatusLastUpdated);
+//     lockers.forEach((locker) => {
+//       locker.cabinets.forEach(async (cabinet) => {
+//         const lastUpdated = new Date(cabinet.cabinetStatusLastUpdated);
 
-        if (lastUpdated >= thirtySecondsAgo) {
-          console.log(
-            `Cabinet ${cabinet.cabinetNumber} in ${locker.location} was updated to ${cabinet.status} in the last 30 seconds`
-          );
-          updatedCabinetsCount++;
-        }
-      });
-    });
+//         if (lastUpdated >= thirtySecondsAgo) {
+//           console.log(
+//             `Cabinet ${cabinet.cabinetNumber} in ${locker.location} was updated to ${cabinet.status} in the last 30 seconds`
+//           );
+//           updatedCabinetsCount++;
 
-    if (updatedCabinetsCount === 0) {
-      console.log("No cabinet status updates found in the last 30 seconds");
-    } else {
-      console.log(
-        `${updatedCabinetsCount} cabinets had status updates in the last 30 seconds`
-      );
-    }
-  } catch (error) {
-    console.error("Error in cron job:", error);
-  }
-});
+//           if (cabinet.status === "occupied") {
+//             // Find the transaction for this cabinet
+//             const transaction = await Transaction.findOne({
+//               CabinetId: cabinet._id,
+//             });
+//             if (transaction) {
+//               // Update the transaction status to awaiting pickup
+//               transaction.parcelStatus = "awaiting pickup";
+//               await transaction.save();
+//             }
+//           }
+//         }
+//       });
+//     });
+
+//     if (updatedCabinetsCount === 0) {
+//       console.log("No cabinet status updates found in the last 30 seconds");
+//     } else {
+//       console.log(
+//         `${updatedCabinetsCount} cabinets had status updates in the last 30 seconds`
+//       );
+//     }
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
 
 // Connect to MongoDB
 mongoose

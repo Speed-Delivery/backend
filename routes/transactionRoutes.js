@@ -20,7 +20,7 @@ router.put(
       .check("parcelStatus")
       .isIn([
         "picked up",
-        "attempted delivery",
+        "waiting to be placed",
         "awaiting pickup",
         "in transit",
         "delivered",
