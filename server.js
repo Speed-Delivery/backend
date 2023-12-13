@@ -168,4 +168,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => logger.info(`Server listening on port ${PORT}`));
+server.listen(PORT || 3000, () =>
+  logger.info(`Server listening on port ${PORT}`)
+);
+
+module.exports = server;
