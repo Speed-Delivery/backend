@@ -1,61 +1,69 @@
-# backend
+# Backend for Consumer-App
 
-### Prerequisites
-- Node.js server running on `localhost` at port `5000`.
-     - You can run it using `npm install` and `npm start` 
+## Introduction
+
+This backend serves as the core API for the Consumer-App,Driver-app and Locker-simulator handling all operations related to parcel delivery services. It facilitates user registration, authentication, parcel tracking, and management.
+
+Live Backend: [Backend on Azure](https://node-backend-speed.azurewebsites.net)
+
+## Prerequisites
+
+- Node.js (See [Node.js official site](https://nodejs.org/en/) for installation)
+- Postman or similar API testing tool for making requests
+
+## Running the Server Locally
+
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+2. **Start the Server in Development Mode**:
+   ```bash
+   npm run dev
+   ```
+   The server will start, typically on `localhost:5000`.
 
 ## API Endpoints
 
-The following table lists the available endpoints in the API, along with their HTTP methods and a brief description.
+Key endpoints available in the API include user registration, authentication, and parcel management.
 
-### User Endpoints
+### Some User Endpoints
 
-| Method | Endpoint                   | Description                        | Access      |
-|--------|----------------------------|------------------------------------|-------------|
-| POST   | `/api/users`               | Register a new user.               | Public      |
-| POST   | `/api/users/signin`        | Sign in an existing user.          | Public      |
-| GET    | `/api/users`               | Retrieve all users.                | Admin Only  |
-| GET    | `/api/users/:userId`       | Retrieve a specific user's details.| Authenticated Users |
-| PUT    | `/api/users/:userId`       | Update a specific user's details.  | Admin or User |
-| DELETE | `/api/users/:userId`       | Delete a specific user.            | Admin Only  |
+| Method | Endpoint            | Description                    |
+| ------ | ------------------- | ------------------------------ |
+| POST   | `/api/users`        | Register a new user.           |
+| POST   | `/api/users/signin` | Authenticate an existing user. |
 
+### Sample Requests
 
-Server listens on `localhost:5005` make sure you have placeholders like `YOUR_USER_ID` and `YOUR_TOKEN`.
+1. **Create (Register a New User)**:
 
-1. **Create (Register a New User):**
    ```bash
-   curl -X POST http://localhost:5005/api/users \
+   curl -X POST https://node-backend-speed.azurewebsites.net/api/users \
         -H 'Content-Type: application/json' \
-        -d '{"username": "foobar", "password": "password123", "email": "foobar@example.com", "role": "user", "fullName": "Foo Bar", "phone": 1234567890, "address": "123 Foobar St"}'
+        -d '{"username": "newuser", "password": "password", "email": "newuser@example.com"}'
    ```
 
- 2. **Sign In (Get a Token):**
+2. **Sign In (Authenticate User)**:
    ```bash
-   curl -X POST http://localhost:5005/api/users/signin \
+   curl -X POST https://node-backend-speed.azurewebsites.net/api/users/signin \
         -H 'Content-Type: application/json' \
-        -d '{"username": "foobar", "password": "password123"}'
-   ```
-3. **Read (Get User Profile):**
-   Replace `YOUR_USER_ID` with the actual user ID.
-   ```bash
-   curl -X GET http://localhost:5005/api/users/YOUR_USER_ID \
-        -H 'Authorization: Bearer YOUR_TOKEN'
+        -d '{"username": "newuser", "password": "password"}'
    ```
 
-4. **Update (Update User Profile):**
-   Replace `YOUR_USER_ID` with the actual user ID.
-   ```bash
-   curl -X PUT http://localhost:5005/api/users/YOUR_USER_ID \
-        -H 'Content-Type: application/json' \
-        -H 'Authorization: Bearer YOUR_TOKEN' \
-        -d '{"fullName": "Foo Bar Updated", "address": "456 Foobar St"}'
-   ```
+## Deployment
 
-5. **Delete (Delete User, Admin only!):**
-   Replace `YOUR_USER_ID` with the actual user ID.
-   ```bash
-   curl -X DELETE http://localhost:5005/api/users/YOUR_USER_ID \
-        -H 'Authorization: Bearer YOUR_TOKEN'
-   ```
+The backend is deployed on Azure and updated through a CI/CD pipeline connected to the [GitHub repository](https://github.com/Speed-Delivery/backend.git).
 
+## Built With
 
+- [Node.js](https://nodejs.org/) and [Express](https://expressjs.com/) - Server framework
+- [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/) - Hosting platform
+
+## Contributors
+
+See the list of [contributors](https://github.com/Speed-Delivery/backend/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
