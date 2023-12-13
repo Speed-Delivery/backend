@@ -62,10 +62,10 @@ The backend is deployed on Azure and updated through a CI/CD pipeline connected 
 
 ## Authors
 
-- Mussa Muna
-- Nafisa Akter
-- Gebrehiwot Matusala
-- Mst Airen Aktar
+- **Mussa Muna**
+- **Nafisa Akter**
+- **Gebrehiwot Matusala**
+- **Mst Airen Aktar**
 
 ## License
 
