@@ -60,9 +60,12 @@ The backend is deployed on Azure and updated through a CI/CD pipeline connected 
 - [Node.js](https://nodejs.org/) and [Express](https://expressjs.com/) - Server framework
 - [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/) - Hosting platform
 
-## Contributors
+## Authors
 
-See the list of [contributors](https://github.com/Speed-Delivery/backend/contributors) who participated in this project.
+- Mussa Muna
+- Nafisa Akter
+- Gebrehiwot Matusala
+- Mst Airen Aktar
 
 ## License
 
